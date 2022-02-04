@@ -6,6 +6,7 @@ package com.evaristo.blog.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +29,14 @@ public class CommentServiceImpl implements CommentService{
 
 	private CommentRepository commentRepository;
 	private PostRepository postRepository;
-	
+	private ModelMapper mapper;
 	
 		
-	public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository) {
+	public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository, ModelMapper mapper) {
 		super();
 		this.commentRepository = commentRepository;
 		this.postRepository = postRepository;
+		this.mapper = mapper;
 	}
 
 
@@ -49,29 +51,7 @@ public class CommentServiceImpl implements CommentService{
 		Comment commentSaved = commentRepository.save(comment);
 		return mapToDTO(commentSaved);
 	}
-	
-	
-	private CommentDTO mapToDTO(Comment comment) {
-		CommentDTO commentDTO = new CommentDTO();		
-		commentDTO.setId(comment.getId());
-		commentDTO.setBody(comment.getBody());
-		commentDTO.setEmail(comment.getEmail());
-		commentDTO.setName(comment.getEmail());
-		return commentDTO;
 		
-	}
-	
-	private Comment mapToEntity(CommentDTO commentDTO) {
-		Comment comment = new Comment();		
-		comment.setId(commentDTO.getId());
-		comment.setBody(commentDTO.getBody());
-		comment.setEmail(commentDTO.getEmail());
-		comment.setName(commentDTO.getEmail());
-		return comment;
-		
-	}
-
-
 	@Override
 	public List<CommentDTO> getCommentByPostId(Long postId) {
 		//retieve comment by postId
@@ -92,6 +72,62 @@ public class CommentServiceImpl implements CommentService{
 			throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
 		}
 		return mapToDTO(comment);
+	}
+
+
+	@Override
+	public CommentDTO updateComment(Long postId, long commentID, CommentDTO commentDTO) {
+		//retieve post entity by id;
+		Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+		//Retrieve a comment by id
+		Comment comment = commentRepository.findById(commentID).orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentID));
+		
+		if(!comment.getPost().getId().equals(post.getId())) {
+			throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
+		}
+		
+		comment.setName(commentDTO.getName());
+		comment.setEmail(commentDTO.getEmail());
+		comment.setBody(commentDTO.getBody());
+		
+		Comment commentUpdated = commentRepository.save(comment);
+		
+		return mapToDTO(commentUpdated);
+	}
+
+
+	@Override
+	public void deleteComment(Long postId, Long commentId) {
+		//retieve post entity by id;
+		Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+		//Retrieve a comment by id
+		Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentId));
+		
+		if(!comment.getPost().getId().equals(post.getId())) {
+			throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
+		}	
+		
+		commentRepository.delete(comment);
+	}
+	
+	private CommentDTO mapToDTO(Comment comment) {
+		CommentDTO commentDTO = mapper.map(comment, CommentDTO.class);		
+//		commentDTO.setId(comment.getId());
+//		commentDTO.setBody(comment.getBody());
+//		commentDTO.setEmail(comment.getEmail());
+//		commentDTO.setName(comment.getEmail());
+		return commentDTO;
+		
+	}
+	
+	private Comment mapToEntity(CommentDTO commentDTO) {
+		Comment comment = mapper.map(commentDTO, Comment.class);		
+//		comment.setId(commentDTO.getId());
+//		comment.setBody(commentDTO.getBody());
+//		comment.setEmail(commentDTO.getEmail());
+//		comment.setName(commentDTO.getEmail());
+		return comment;
+		
 	}
 
 }

@@ -15,7 +15,12 @@ import com.evaristo.blog.payload.CommentDTO;
 public interface CommentService {
 	
 	CommentDTO createComment(Long postId, CommentDTO commentDTO);
+	
 	List<CommentDTO> getCommentByPostId(Long postId);
+	
 	CommentDTO getCommentById(Long postId, Long commentID);
-
+	
+	CommentDTO updateComment(Long postId, long commentID, CommentDTO commentDTO);
+	
+	void deleteComment( Long postId, Long commentId);
 }
