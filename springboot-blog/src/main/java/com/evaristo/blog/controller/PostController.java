@@ -3,7 +3,7 @@
  */
 package com.evaristo.blog.controller;
 
-import java.util.List;
+import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class PostController {
 	
 	//Create blog post
 	@PostMapping
-	public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO){
+	public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO){
 		return new ResponseEntity<>(postService.createPost(postDTO), HttpStatus.CREATED);
 	}
 	
@@ -61,7 +61,7 @@ public class PostController {
 	
 	//update by id rest api
 	@PutMapping("/{id}")
-	public ResponseEntity<PostDTO> updatePost(@RequestBody PostDTO postDTO, @PathVariable(name="id") long id){
+	public ResponseEntity<PostDTO> updatePost(@Valid @RequestBody PostDTO postDTO, @PathVariable(name="id") long id){
 		return new ResponseEntity<>(postService.updatePost(postDTO, id), HttpStatus.OK);
 		
 	}
