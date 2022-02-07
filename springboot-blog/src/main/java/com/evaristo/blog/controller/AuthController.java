@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.evaristo.blog.entity.Role;
 import com.evaristo.blog.entity.User;
+import com.evaristo.blog.payload.JWTAuthResponse;
 import com.evaristo.blog.payload.LoginDTO;
 import com.evaristo.blog.payload.SignUpDTO;
 import com.evaristo.blog.repository.RoleRepository;
 import com.evaristo.blog.repository.UserRepository;
+import com.evaristo.blog.security.JWTTokenProvider;
 
 /**
  * @author evari
@@ -45,12 +47,20 @@ public class AuthController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
+	@Autowired
+	private JWTTokenProvider jwtTokenProvider;
+	
+	
 	@PostMapping("/signin")
-	public ResponseEntity<String> authenticateUser(@RequestBody LoginDTO loginDTO){
+	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDTO){
 		Authentication authentication =   authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 				loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return new ResponseEntity<>("User signed-in successfully", HttpStatus.OK);
+		
+		//get token from token provider
+		String token = jwtTokenProvider.generateToken(authentication);
+		
+		return new ResponseEntity<>(new JWTAuthResponse(token), HttpStatus.OK);
 		
 	}
 	
