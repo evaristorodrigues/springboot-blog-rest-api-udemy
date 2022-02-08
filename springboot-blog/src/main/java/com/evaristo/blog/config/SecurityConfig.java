@@ -57,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 			.csrf().disable()
+			//TOKEN JWT
 			.exceptionHandling()
 			.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 			.and()
@@ -64,8 +65,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 			.authorizeRequests()
+			//Methods gets
 			.antMatchers(HttpMethod.GET, "/api/**").permitAll()
+			//Authentication
 			.antMatchers( "/api/v1/auth/**").permitAll()
+			//Swagger
+			.antMatchers( "/v3/api-docs/**").permitAll()
+			.antMatchers( "/swagger-ui/**").permitAll()
+			.antMatchers( "/swagger-resources/**").permitAll()
+			.antMatchers( "/swagger-ui.html/**").permitAll()
+			.antMatchers( "/webjars/**").permitAll()
+			
 			.anyRequest()
 			.authenticated();
 		//desabilitando o BA
