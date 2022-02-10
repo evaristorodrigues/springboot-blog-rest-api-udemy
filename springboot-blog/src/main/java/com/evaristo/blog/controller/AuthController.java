@@ -27,10 +27,14 @@ import com.evaristo.blog.repository.RoleRepository;
 import com.evaristo.blog.repository.UserRepository;
 import com.evaristo.blog.security.JWTTokenProvider;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * @author evari
  *
  */
+@Api(value ="Auth Controller exposes signin and signup REST APIS" )
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -50,7 +54,7 @@ public class AuthController {
 	@Autowired
 	private JWTTokenProvider jwtTokenProvider;
 	
-	
+	@ApiOperation(value="REST API to register signup user to Blog app")
 	@PostMapping("/signin")
 	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDTO){
 		Authentication authentication =   authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -64,6 +68,7 @@ public class AuthController {
 		
 	}
 	
+	@ApiOperation(value="REST API to register signup user to Blog app")
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDTO){
 		//FIXME From my point of view this roles should be inside a @Service class

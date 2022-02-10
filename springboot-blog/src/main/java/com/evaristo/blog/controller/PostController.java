@@ -27,10 +27,15 @@ import com.evaristo.blog.payload.PostResponse;
 import com.evaristo.blog.service.PostService;
 import com.evaristo.blog.utils.AppConstants;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+
 /**
  * @author evari
  *
  */
+@Api(value = "CRUS REST APIs for Post resources")
 @RestController
 @RequestMapping("/api")
 public class PostController {
@@ -43,6 +48,7 @@ public class PostController {
 	}
 	
 	//Create blog post
+	@ApiOperation(value="Create Post REST API")
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/v1/posts")
 	public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO){
@@ -50,7 +56,7 @@ public class PostController {
 	}
 	
 	//get all post rest api
-	
+	@ApiOperation(value="Get All Post API")
 	@GetMapping("/v1/posts")
 	public PostResponse getAllPosts(@RequestParam(value="pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
 			                        @RequestParam(value="pageSize", defaultValue= AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -60,11 +66,13 @@ public class PostController {
 		return postService.getAllPosts(pageNo, pageSize,sortBy, sortDir);
 	}
 	
+	@ApiOperation(value="Get Post by ID REST API using URI as version V1")
 	@GetMapping("/v1/posts/{id}")
 	public ResponseEntity<PostDTO> gePostByIdV1(@PathVariable(name="id") Long id){
 		return  ResponseEntity.ok(postService.getPostsById(id));
 	}
 	
+	@ApiOperation(value="Get Post by ID REST API using URI as version V2")
 	@GetMapping("/v2/posts/{id}")
 	public ResponseEntity<PostDTOV2> gePostByIdV2(@PathVariable(name="id") Long id){
 		
@@ -84,12 +92,13 @@ public class PostController {
 		
 		return  ResponseEntity.ok(postDTOV2);
 	}
-	
+	@ApiOperation(value="Get Post by ID REST API using parameter as version 1")
 	@GetMapping(value="/posts/{id}", params = "version=1")
 	public ResponseEntity<PostDTO> gePostByIdParamV1(@PathVariable(name="id") Long id){
 		return  ResponseEntity.ok(postService.getPostsById(id));
 	}
 	
+	@ApiOperation(value="Get Post by ID REST API using parameter as version 2")
 	@GetMapping(value="/posts/{id}", params = "version=2")
 	public ResponseEntity<PostDTOV2> gePostByIdParamV2(@PathVariable(name="id") Long id){
 		
@@ -109,12 +118,12 @@ public class PostController {
 		
 		return  ResponseEntity.ok(postDTOV2);
 	}
-	
+	@ApiOperation(value="Get Post by ID REST API using Hearder as version 1")
 	@GetMapping(value="/posts/{id}", headers = "X-API-VERSION=1" )
 	public ResponseEntity<PostDTO> gePostByIdHeaderV1(@PathVariable(name="id") Long id){
 		return  ResponseEntity.ok(postService.getPostsById(id));
 	}
-	
+	@ApiOperation(value="Get Post by ID REST API using Hearder as version 2")
 	@GetMapping(value="/posts/{id}", headers = "X-API-VERSION=2")
 	public ResponseEntity<PostDTOV2> gePostByIdHeaderV2(@PathVariable(name="id") Long id){
 		
@@ -135,11 +144,13 @@ public class PostController {
 		return  ResponseEntity.ok(postDTOV2);
 	}
 	
+	@ApiOperation(value="Get Post by ID REST API using Content Negociation as version 1")
 	@GetMapping(value="/posts/{id}", produces = "application/vnd.version.v1+json")
 	public ResponseEntity<PostDTO> gePostByIdContentNegociationV1(@PathVariable(name="id") Long id){
 		return  ResponseEntity.ok(postService.getPostsById(id));
 	}
 	
+	@ApiOperation(value="Get Post by ID REST API using Content Negociation as version 2")
 	@GetMapping(value="/posts/{id}", produces = "application/vnd.version.v2+json")
 	public ResponseEntity<PostDTOV2> gePostByIdContentNegociationV2(@PathVariable(name="id") Long id){
 		
@@ -161,13 +172,14 @@ public class PostController {
 	}
 	
 	//update by id rest api
+	@ApiOperation(value="Update Post by ID REST API")
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/v1/posts/{id}")
 	public ResponseEntity<PostDTO> updatePost(@Valid @RequestBody PostDTO postDTO, @PathVariable(name="id") long id){
 		return new ResponseEntity<>(postService.updatePost(postDTO, id), HttpStatus.OK);
 		
 	}
-	
+	@ApiOperation(value="Delete Post by ID REST API")
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/v1/posts/{id}")
 	public ResponseEntity<String> deletePost(@PathVariable(name="id") long id){
